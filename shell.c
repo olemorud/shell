@@ -48,26 +48,27 @@ void free_arglist(char **args){
 }
 
 int main(){
-	char **args = malloc(MAXLEN/2);
+	char *args[MAXLEN/2];
 
 	while(1){
 		read_arglist(args);
 
-		int pid = fork();
-		switch( pid ){
-			case 0: /* child */
-				execvp(args[0], args);
-				printf("%s\n", strerror(errno));
-				exit(1);
-				break;
-			case -1: /* error */
-				printf("fork failed");
-				break;
+		if(strcmp(args[0], "exit") == 0) break;
+
+		switch( fork() ){
+		case 0:  /* child  */
+			execvp(args[0], args);
+			printf("%s\n", strerror(errno));
+			exit(EXIT_FAILURE);
+
+		case -1: /* error  */
+			printf("fork failed, error: %s", strerror(errno));
+			continue;
+
+		default: /* parent */
+			wait(NULL);
+			free_arglist(args);
 		}
-		
-		/* parent */
-		wait(NULL);
-		free_arglist(args);
 	}
 
 	return 0;
