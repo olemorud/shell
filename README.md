@@ -11,6 +11,6 @@ fork
  |     execvp(arg-list)
  |
  |__ parent process:
- 	   wait for child
-	   start over
+       wait for child
+       start over
 ```
